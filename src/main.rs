@@ -1,7 +1,6 @@
 extern crate sdl2;
 
 pub mod cell;
-pub mod cell_controller;
 pub mod column;
 pub mod scrollbar;
 pub mod table;
@@ -41,6 +40,7 @@ pub fn main() {
 
     let mut event_pump = sdl_context.event_pump().unwrap();
     let mut mouse_held = false;
+    let mut ctrl_held = false;
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -81,22 +81,39 @@ pub fn main() {
                 Event::KeyDown { keycode, .. } => {
                     if table.has_selected() {
                         match keycode.unwrap() {
+                            sdl2::keyboard::Keycode::LCTRL | sdl2::keyboard::Keycode::RCTRL => {
+                                ctrl_held = true;
+                            }
+                            sdl2::keyboard::Keycode::Delete => {
+                                table.columns[table.selected_column as usize]
+                                    .get_selected(table.selected_row)
+                                    .delete_text();
+                            }
                             sdl2::keyboard::Keycode::Backspace => {
                                 table.columns[table.selected_column as usize]
                                     .get_selected(table.selected_row)
                                     .delete_text();
                             }
                             sdl2::keyboard::Keycode::Left => {
-                                table.selected_column -= 1;
+                                if ctrl_held {
+                                    table.selected_column -= 1;
+                                }
                             }
                             sdl2::keyboard::Keycode::Right => {
-                                table.selected_column += 1;
+                                if ctrl_held {
+                                    table.selected_column += 1;
+                                }
                             }
+
                             sdl2::keyboard::Keycode::Up => {
-                                table.selected_row -= 1;
+                                if ctrl_held {
+                                    table.selected_row -= 1;
+                                }
                             }
                             sdl2::keyboard::Keycode::Down => {
-                                table.selected_row += 1;
+                                if ctrl_held {
+                                    table.selected_row += 1;
+                                }
                             }
                             sdl2::keyboard::Keycode::Return => {
                                 table.typing("\n".to_string());
