@@ -97,11 +97,15 @@ pub fn main() {
                             sdl2::keyboard::Keycode::Left => {
                                 if ctrl_held {
                                     table.selected_column -= 1;
+                                } else {
+                                    table.columns[table.selected_column as usize].get_selected(table.selected_row).shift_cursor(-1);
                                 }
                             }
                             sdl2::keyboard::Keycode::Right => {
                                 if ctrl_held {
                                     table.selected_column += 1;
+                                }else {
+                                    table.columns[table.selected_column as usize].get_selected(table.selected_row).shift_cursor(1);
                                 }
                             }
 
